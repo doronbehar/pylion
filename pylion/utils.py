@@ -5,6 +5,7 @@ import warnings
 import functools
 import h5py
 from termcolor import colored
+import random
 
 
 def pretty_repr(_cls):
@@ -42,7 +43,7 @@ def validate_id(func):
 def _unique_id(*args):
     # extract 2 least significant bytes. that should be enough to make sure ids
     # are unique and it's sensitive to small changes in the input arguments
-    uid = sum([id(arg) for arg in args])
+    uid = sum([id(arg) + random.randint(1, 2**16) for arg in args])
     # uid &= 0xFFF
     return uid
 
