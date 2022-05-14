@@ -12,11 +12,13 @@ class CfgObject:
 
         # use default keys 'code', 'type' and update if there is anything else
         # __call__ will overwrite code except for ions
-        required = [x if isinstance(x, tuple) else (x, None)
-                    for x in required + [('code', []), 'type']]
+        required = [
+            x if isinstance(x, tuple) else (x, None)
+            for x in required + [("code", []), "type"]
+        ]
 
         self.odict = dict(required)
-        self.odict['type'] = lmp_type
+        self.odict["type"] = lmp_type
 
         # add dunder attrs from func
         functools.update_wrapper(self, func)
@@ -25,13 +27,13 @@ class CfgObject:
 
         func = self.func
 
-        if getattr(self, '_unique_id', False):
+        if getattr(self, "_unique_id", False):
             uid = _unique_id(func, *args)
-            self.odict['uid'] = uid
+            self.odict["uid"] = uid
             func = functools.partial(self.func, uid)
 
         self.odict.update(func(*args, **kwargs))
-        if not isinstance(self.odict['code'], list):
+        if not isinstance(self.odict["code"], list):
             raise TypeError("'code' should be a list of strings.")
 
         return self.odict.copy()
@@ -48,19 +50,18 @@ class Ions(CfgObject):
 
         # if function, charge, mass and rigid are the same it's probably the
         # same ions definition. Don't increment the set count.
-        charge, mass = self.odict['charge'], self.odict['mass']
-        rigid = self.odict.get('rigid', False)
+        charge, mass = self.odict["charge"], self.odict["mass"]
+        rigid = self.odict.get("rigid", False)
 
         uid = _unique_id(self.func, charge, mass, rigid)
         Ions._ids.add(uid)
 
-        self.odict['uid'] = len(Ions._ids)
+        self.odict["uid"] = len(Ions._ids)
 
         return self.odict.copy()
 
 
 class Variable(CfgObject):
-
     def __call__(self, *args, **kwargs):
         # vtype can only be 'fix' or 'var'
         # var type variables are easy to add with custom code
@@ -68,35 +69,34 @@ class Variable(CfgObject):
         # be nice and only do the check if 'variables' is found in the args
         # otherwise it will pass anyway since the empty set is a subset of
         # any set
-        vs = kwargs.get('variables', [])
-        allowed = {'id', 'x', 'y', 'z', 'vx', 'vy', 'vz'}
+        vs = kwargs.get("variables", [])
+        allowed = {"id", "x", "y", "z", "vx", "vy", "vz"}
         if not set(vs).issubset(allowed):
-            prefix = [item.startswith('v_') for item in vs]
+            prefix = [item.startswith("v_") for item in vs]
             if not all(prefix):
                 raise TypeError(
-                    f'Use only {allowed} as variables or previously defined '
-                    "variables with the prefix 'v_'.")
+                    f"Use only {allowed} as variables or previously defined "
+                    "variables with the prefix 'v_'."
+                )
 
         self.odict = super().__call__(*args, **kwargs)
 
-        prefix = {'fix': 'f_', 'var': 'v_'}
-        vtype = self.odict['vtype']
-        name = self.odict['uid']
-        output = ' '.join([f'{prefix[vtype]}{name}[{i+1}]'
-                           for i in range(len(vs))])
-        self.odict.update({'output': output})
+        prefix = {"fix": "f_", "var": "v_"}
+        vtype = self.odict["vtype"]
+        name = self.odict["uid"]
+        output = " ".join([f"{prefix[vtype]}{name}[{i+1}]" for i in range(len(vs))])
+        self.odict.update({"output": output})
 
         return self.odict.copy()
 
 
 class lammps:
-
     @validate_id
     def fix(func):
-        return CfgObject(func, 'fix')
+        return CfgObject(func, "fix")
 
     def command(func):
-        return CfgObject(func, 'command')
+        return CfgObject(func, "command")
 
     # def group(func):
     #     return CfgObject(func, 'group')
@@ -105,10 +105,9 @@ class lammps:
         @validate_id
         # @validate_vars
         def decorator(func):
-            return Variable(func, 'variable',
-                            required=['output', ('vtype', vtype)])
+            return Variable(func, "variable", required=["output", ("vtype", vtype)])
+
         return decorator
 
     def ions(func):
-        return Ions(func, 'ions',
-                    required=['charge', 'mass', 'positions'])
+        return Ions(func, "ions", required=["charge", "mass", "positions"])
