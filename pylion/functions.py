@@ -371,6 +371,7 @@ def linearpaultrap(uid, trap, ions=None, all=True):
         kappa = trap["kappa"]
         freq = trap["frequency"]
         voltage = trap["voltage"]
+        anisotropy = trap.get("anisotropy", 1)
 
         ar = -4 * charge * kappa * ev / (mass * length**2 * (2 * np.pi * freq) ** 2)
         az = -2 * ar
@@ -394,7 +395,7 @@ def linearpaultrap(uid, trap, ions=None, all=True):
         else:
             group = ions["uid"]
 
-        sho = _pseudotrap(uid, (kr, kr, kz), group)
+        sho = _pseudotrap(uid, (kr, anisotropy * kr, kz), group)
 
         odict.update(sho)
         return odict
