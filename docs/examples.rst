@@ -88,9 +88,9 @@ Here's the whole script::
              c='red', s=50, alpha=1)
   ax.scatter(data[0, :, 0], data[0, :, 1], data[0, :, 2],
              c='blue', s=50, alpha=1)
-  plt.xlabel('x (um)')
-  plt.ylabel('y (um)')
-  plt.zlabel('z (um)')
+  ax.set_xlabel('x (um)')
+  ax.set_ylabel('y (um)')
+  ax.set_zlabel('z (um)')
   plt.show()
 
 First, import pylion and a few other packages.
