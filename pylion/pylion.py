@@ -47,15 +47,15 @@ class Simulation(list):
         name = name.replace(" ", "_").lower()
 
         self.attrs = Attributes()
-        self.attrs["executable"] = "lmp_serial"
-        self.attrs["timestep"] = 1e-6
-        self.attrs["domain"] = [1e-3, 1e-3, 1e-3]  # length, width, height
-        self.attrs["name"] = name
-        self.attrs["neighbour"] = {"skin": 1, "list": "nsq"}
-        self.attrs["coulombcutoff"] = 10
-        self.attrs["template"] = "simulation.j2"
-        self.attrs["version"] = __version__
-        self.attrs["rigid"] = {"exists": False}
+        self.attrs['executable'] = 'lmp_serial -log ' + name + '.lmp.log'
+        self.attrs['timestep'] = 1e-6
+        self.attrs['domain'] = [1e-3, 1e-3, 1e-3]  # length, width, height
+        self.attrs['name'] = name
+        self.attrs['neighbour'] = {'skin': 1, 'list': 'nsq'}
+        self.attrs['coulombcutoff'] = 10
+        self.attrs['template'] = 'simulation.j2'
+        self.attrs['version'] = __version__
+        self.attrs['rigid'] = {'exists': False}
 
         # # initalise the h5 file
         # with h5py.File(self.attrs['name'] + '.h5', 'w') as f:

@@ -501,6 +501,6 @@ def readdump(filename):
                 block = [next(f).split()[1:] for _ in range(ions)]
                 data.append(block)
 
-    steps = np.array(steps, dtype=float)
-    data = np.array(data, dtype=float)  # shape=(steps, ions, (x,y,z))
+    steps = np.array(steps, dtype=np.float64)
+    data = np.array(data, dtype=np.float64)  # shape=(steps, ions, (x,y,z))
     return steps, data
