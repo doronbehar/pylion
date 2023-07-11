@@ -5,19 +5,21 @@ import warnings
 import functools
 import h5py
 from termcolor import colored
+import random
 
 
 def pretty_repr(_cls):
     def _repr(self):
-        title = colored('signature', 'red')
-        lines = f'\n{title}: {self.__name__}{inspect.signature(_cls)}\n'
-        title = colored('docstring', 'red')
-        lines += f'{title}: {inspect.getdoc(self)}\n'
-        title = colored('file', 'red')
-        lines += f'{title}:      {os.path.abspath(self.__module__)}\n'
-        title = colored('type', 'red')
-        lines += f'{title}:      {type(self)}\n'
+        title = colored("signature", "red")
+        lines = f"\n{title}: {self.__name__}{inspect.signature(_cls)}\n"
+        title = colored("docstring", "red")
+        lines += f"{title}: {inspect.getdoc(self)}\n"
+        title = colored("file", "red")
+        lines += f"{title}:      {os.path.abspath(self.__module__)}\n"
+        title = colored("type", "red")
+        lines += f"{title}:      {type(self)}\n"
         return lines
+
     _cls.__repr__ = _repr
     return _cls
 
@@ -28,7 +30,7 @@ def validate_id(func):
         _func = args[0]
         # check that the leftmost argument of the pass function is 'uid'
         for param in inspect.signature(_func).parameters:
-            if param == 'uid':
+            if param == "uid":
                 break
             else:
                 raise TypeError("First argument needs to be 'uid'.")
@@ -36,13 +38,14 @@ def validate_id(func):
         cfg = func(*args)
         cfg._unique_id = True
         return cfg
+
     return wrapper
 
 
 def _unique_id(*args):
     # extract 2 least significant bytes. that should be enough to make sure ids
     # are unique and it's sensitive to small changes in the input arguments
-    uid = sum([id(arg) for arg in args])
+    uid = sum([id(arg) + random.randint(1, 2**16) for arg in args])
     # uid &= 0xFFF
     return uid
 
@@ -60,23 +63,25 @@ def save_atttributes_and_files(func):
         # not even created
 
         # initalise the h5 file
-        with h5py.File(attrs['name'] + '.h5', 'w') as f:
+        with h5py.File(attrs["name"] + ".h5", "w") as f:
             pass
 
         # save attrs and scripts to h5 file
-        attrs.save(attrs['name'] + '.h5')
-        _savecallersource(attrs['name'] + '.h5')
+        attrs.save(attrs["name"] + ".h5")
+        _savecallersource(attrs["name"] + ".h5")
 
-        for filename in (attrs['output_files']
-                         + ['log.lammps', attrs['name'] + '.lammps']):
-            _savescriptsource(attrs['name'] + '.h5', filename)
+        for filename in attrs["output_files"] + [
+            "log.lammps",
+            attrs["name"] + ".lammps",
+        ]:
+            _savescriptsource(attrs["name"] + ".h5", filename)
 
     return wrapper
 
 
 def _savescriptsource(h5file, script):
-    with h5py.File(h5file, 'a') as f:
-        with open(script, 'rb') as pf:
+    with h5py.File(h5file, "a") as f:
+        with open(script, "rb") as pf:
             lines = pf.readlines()
             f.create_dataset(script, data=lines)
 
@@ -93,8 +98,9 @@ def _savecallersource(h5file):
 
     # cannot save on the h5 file if using the repl
     warnings.warn(
-        'Caller source not saved. '
-        'Are you running the simulation from the REPL?')
+        "Caller source not saved. " "Are you running the simulation from the REPL?"
+    )
+
 
 # def validate_vars(func):
 #     @functools.wraps(func)
