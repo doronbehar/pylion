@@ -48,6 +48,7 @@ class Simulation(list):
 
         self.attrs = Attributes()
         self.attrs['executable'] = 'lmp_serial -log ' + name + '.lmp.log'
+        self.attrs['thermo_styles'] = ['step', 'cpu']
         self.attrs['timestep'] = 1e-6
         self.attrs['domain'] = [1e-3, 1e-3, 1e-3]  # length, width, height
         self.attrs['name'] = name

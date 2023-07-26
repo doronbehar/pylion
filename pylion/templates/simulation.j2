@@ -47,7 +47,7 @@ timestep {{ timestep }}
 
 # Configuring additional output to flush buffer during simulation...
 thermo 10000
-thermo_style custom step cpu
+thermo_style custom {{ thermo_styles|join(' ') }}
 thermo_modify flush yes
 
 # Time integration...
