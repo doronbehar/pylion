@@ -408,7 +408,7 @@ def timeaverage(uid, steps, variables):
     """A variable in LAMMPS representing a time averaged quantity over a
     number of steps.
 
-    :param stes: number of steps to average over
+    :param steps: number of steps to average over
     :param variables: list of variables to be averaged
     """
 
