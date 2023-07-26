@@ -72,7 +72,7 @@ class Variable(CfgObject):
         vs = kwargs.get("variables", [])
         allowed = {"id", "x", "y", "z", "vx", "vy", "vz"}
         if not set(vs).issubset(allowed):
-            prefix = [item.startswith("v_") for item in vs]
+            prefix = [item.startswith("v_") or item.startswith("c_") for item in vs]
             if not all(prefix):
                 raise TypeError(
                     f"Use only {allowed} as variables or previously defined "
@@ -81,7 +81,7 @@ class Variable(CfgObject):
 
         self.odict = super().__call__(*args, **kwargs)
 
-        prefix = {"fix": "f_", "var": "v_"}
+        prefix = {"fix": "f_", "var": "v_", "compute": "c_"}
         vtype = self.odict["vtype"]
         name = self.odict["uid"]
         output = " ".join([f"{prefix[vtype]}{name}[{i+1}]" for i in range(len(vs))])

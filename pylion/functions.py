@@ -402,6 +402,20 @@ def linearpaultrap(uid, trap, ions=None, all=True):
     else:
         return _rftrap(uid, trap)
 
+@lammps.variable("compute")
+def compute(uid, styles, group="all"):
+    """Tells lammps to compute given styles to given group while simulation is running
+
+    :param styles: list of styles
+    :param group: group-ID of atoms to compute the styles for
+    """
+
+    if isinstance(styles, list):
+        styles = " ".join(styles)
+
+    lines = [f"compute {uid} {group} {styles}\n"]
+
+    return {"code": lines}
 
 @lammps.variable("fix")
 def timeaverage(uid, steps, variables):
