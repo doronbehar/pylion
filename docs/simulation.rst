@@ -48,6 +48,7 @@ The simulation attributes are implemented as a simple subclass of ``dict`` that 
 A ``Simulation()`` defines a set of default attributes that control simulation parameters:
 
 - *executable*, <path-to-lammps-binary>
+- *gpu*, if not ``None``, set the arguments to the ``package gpu`` command as a single string. Check out lammps documentation for the `package <https://docs.lammps.org/package.html>`_ command for more details.
 - *timestep*, the equations of motion are propagated by this much at every step.
   You can set this parameter to whatever value you want but ideally it would be faster than the fastest timescale in your problem (usually the rf frequency of the Paul trap).
   Any fix can also set the timestep automatically if it has a ``timestep`` key in its dictionary, whose value is less than the current value of the simulation timestep.

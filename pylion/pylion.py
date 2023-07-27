@@ -47,6 +47,7 @@ class Simulation(list):
         name = name.replace(" ", "_").lower()
 
         self.attrs = Attributes()
+        self.attrs['gpu'] = None
         self.attrs['executable'] = 'lmp_serial -log ' + name + '.lmp.log'
         self.attrs['thermo_styles'] = ['step', 'cpu']
         self.attrs['timestep'] = 1e-6
