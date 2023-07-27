@@ -47,7 +47,7 @@ The simulation attributes are implemented as a simple subclass of ``dict`` that 
 
 A ``Simulation()`` defines a set of default attributes that control simulation parameters:
 
-- *executable*, <path-to-lammps-binary>
+- *executable*, path to lammps binary. Can also be set to a string with spaces, to include multiple arguments. It can even be: ``mpirun lmp`` to parallelise the execution with `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`, as `explained in lammps docs <https://docs.lammps.org/Speed_omp.html#run-with-the-openmp-package-from-the-command-line>`.
 - *gpu*, if not ``None``, set the arguments to the ``package gpu`` command as a single string. Check out lammps documentation for the `package <https://docs.lammps.org/package.html>`_ command for more details.
 - *timestep*, the equations of motion are propagated by this much at every step.
   You can set this parameter to whatever value you want but ideally it would be faster than the fastest timescale in your problem (usually the rf frequency of the Paul trap).
