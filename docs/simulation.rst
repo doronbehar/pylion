@@ -54,6 +54,7 @@ A ``Simulation()`` defines a set of default attributes that control simulation p
 - *domain*, defines the lower limits of the spatial region of the simulation.
   The simulation box may expand beyond these initial limits, but all ions must be initially placed within this region or an error will be thrown by lammps.
   Check out the lammps documentation for the `boundary <http://lammps.sandia.gov/doc/boundary.html>`_ and `box <http://lammps.sandia.gov/doc/create_box.html>`_ commands for more information.
+- *thermo_styles*, simply arguments to the `thermo_style <https://docs.lammps.org/thermo_style.html>`_ LAMMPS command. Useful if you want to see the temperature of the whole system while the simulation is running, and in the log file. Defaults to: ``['step', 'cpu']``.
 
   A guideline for optimisation is to ensure the simulation domain fits the
   enclosed atoms tightly; this ensures that when the domain is spatially

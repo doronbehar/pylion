@@ -402,19 +402,36 @@ def linearpaultrap(uid, trap, ions=None, all=True):
     else:
         return _rftrap(uid, trap)
 
+@lammps.variable("compute")
+def compute(uid, styles, group="all"):
+    """Tells lammps to compute given styles to given group while simulation is running
+
+    :param styles: list of styles
+    :param group: group-ID of atoms to compute the styles for
+    """
+
+    if isinstance(styles, list):
+        styles = " ".join(styles)
+
+    lines = [f"compute {uid} {group} {styles}\n"]
+
+    return {"code": lines}
 
 @lammps.variable("fix")
-def timeaverage(uid, steps, variables):
+def timeaverage(uid, steps, variables, style="ave/atom", **kwargs):
     """A variable in LAMMPS representing a time averaged quantity over a
     number of steps.
 
-    :param stes: number of steps to average over
+    :param steps: number of steps to average over
     :param variables: list of variables to be averaged
+    :param style: style name of this fix command (defaults to 'ave/atom')
+    :param \**kwargs: Arbitrary keyword arguments recognised by lammps
     """
 
     variables = " ".join(variables)
+    kwargs = ' '.join("{} {}".format(x,y) for x, y in kwargs.items())
 
-    lines = [f"fix {uid} all ave/atom 1 {steps:d} {steps:d} {variables}\n"]
+    lines = [f"fix {uid} all {style} 1 {steps:d} {steps:d} {variables} {kwargs}\n"]
 
     return {"code": lines}
 
