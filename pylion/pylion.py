@@ -47,7 +47,8 @@ class Simulation(list):
         name = name.replace(" ", "_").lower()
 
         self.attrs = Attributes()
-        self.attrs['executable'] = 'lmp_serial -log ' + name + '.lmp.log'
+        self.attrs['gpu'] = None
+        self.attrs['executable'] = 'lmp_serial'
         self.attrs['thermo_styles'] = ['step', 'cpu']
         self.attrs['timestep'] = 1e-6
         self.attrs['domain'] = [1e-3, 1e-3, 1e-3]  # length, width, height
@@ -199,7 +200,11 @@ class Simulation(list):
         signal.signal(signal.SIGINT, signal_handler)
 
         child = pexpect.spawn(
-            " ".join([self.attrs["executable"], "-in", self.attrs["name"] + ".lammps"]),
+            " ".join([
+                self.attrs["executable"],
+                "-log", self.attrs['name'] + ".lmp.log",
+                "-in", self.attrs["name"] + ".lammps",
+                ]),
             timeout=None,
             encoding="utf8",
         )

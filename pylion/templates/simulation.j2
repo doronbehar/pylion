@@ -9,9 +9,9 @@
 # If you find it useful please cite <paper>.
 ##################################################################
 
-{% if gpu %}
-# Enabling GPU acceleration via CUDA...
-package gpu 1
+{% if gpu is not none %}
+# Enabling GPU acceleration
+package gpu {{ gpu }}
 suffix gpu
 {% endif %}
 
