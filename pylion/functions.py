@@ -453,12 +453,13 @@ def squaresum(uid, variables):
 
 
 @lammps.fix
-def dump(uid, filename, variables, steps=10):
+def dump(uid, filename, variables, steps=10, group="all"):
     """Dumps variables from lammps into files for analysis.
 
     :param filename: name of output file
     :param variables: list of variables to be written
     :param steps: variables are written every steps
+    :param group: group id of atoms to dump
     """
 
     lines = []
@@ -469,7 +470,7 @@ def dump(uid, filename, variables, steps=10):
     except:
         names = " ".join(variables)
 
-    lines.append(f"dump {uid} all custom {steps:d} {filename} id {names}\n")
+    lines.append(f"dump {uid} {group} custom {steps:d} {filename} id {names}\n")
 
     return {"code": lines}
 
