@@ -518,6 +518,9 @@ def readdump(filename):
                     raise TypeError
                 block = [next(f).split()[1:] for _ in range(ions)]
                 data.append(block)
+            elif line[6:9] == "ENT":
+                block = [next(f).split() for _ in range(ions)]
+                data.append(block)
 
     steps = np.array(steps, dtype=np.float64)
     data = np.array(data, dtype=np.float64)  # shape=(steps, ions, (x,y,z))
