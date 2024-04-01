@@ -200,28 +200,32 @@ def langevinbath(uid, temperature, dampingtime):
 
 
 @lammps.fix
-def lasercool(uid, ions, k):
+def lasercool(uid, ions, k, Gamma, Omega, delta):
     """Simulates laser cooling of a particular ion species by damping the
     velocity of the ions. kx, ky, kz define the strength of the damping force,
-    which is of the form :math:`f_i = - k_i * v_i`.
+    which is of the form:
+
+        .. math::
+            `f_i = \\hbar \\vec{k} \\frac{\\Gamma}{2} \\frac{\\Omega^2/2}{(\\delta - \\vec{k}\\cdot\\vec{v})^2+\\Gamma^2/4 + \\Omega^2/2}`.
 
     See Also: langevinbath
 
     :param ions: select species of ions
     :param k: (kx, ky, kz) laser wavevector
+    :param Gamma: The linewidth of the energy level
+    :param Omega: The Rabi frequency of the laser
+    :param delta: The Laser's frequency detuning from the energy level
     """
 
-    force = np.linalg.norm(k)
-    kx, ky, kz = np.array(k) / force
     gid = ions["uid"]
-
+    mostNominator = 1.054571818e-34 * Gamma/2 * Omega**2/2
+    mostDenominator = Gamma**2/4 + Omega**2/2
     lines = [
         "\n# Define laser cooling for a particular atom species.",
         f"group {uid} type {gid}",
-        f'variable vel_{uid} atom "{kx} * vx + {ky} * vy + {kz} * vz"',
-        f'variable fX{uid} atom "-v_vel_{uid} * mass * {kx * force}"',
-        f'variable fY{uid} atom "-v_vel_{uid} * mass * {ky * force}"',
-        f'variable fZ{uid} atom "-v_vel_{uid} * mass * {kz * force}"',
+        f'variable fX{uid} atom "{mostNominator} * {k[0]} / ({mostDenominator} + ({delta} - {k[0]}*vx)^2)"',
+        f'variable fY{uid} atom "{mostNominator} * {k[1]} / ({mostDenominator} + ({delta} - {k[1]}*vy)^2)"',
+        f'variable fZ{uid} atom "{mostNominator} * {k[2]} / ({mostDenominator} + ({delta} - {k[2]}*vz)^2)"',
         f"fix {uid} {gid} addforce v_fX{uid} v_fY{uid} v_fZ{uid}\n",
     ]
 
