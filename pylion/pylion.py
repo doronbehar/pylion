@@ -6,13 +6,9 @@ from datetime import datetime
 from collections import defaultdict
 import sys
 import time
+import subprocess
 
 from .utils import save_atttributes_and_files
-
-if "win32" in sys.platform:
-    import wexpect as pexpect
-else:
-    import pexpect
 
 __version__ = "0.5.3"
 
@@ -190,43 +186,24 @@ class Simulation(list):
 
         self._writeinputfile()
 
-        def signal_handler(sig, frame):
-            print("Simulation terminated by the user.")
-            child.terminate()
-            # sys.exit(0)
+        signal.signal(signal.SIGINT, self.signal_handler)
 
-        signal.signal(signal.SIGINT, signal_handler)
-
-        child = pexpect.spawn(
-            " ".join([
-                self.attrs["executable"],
-                "-log", self.attrs['name'] + ".lmp.log",
-                "-in", self.attrs["name"] + ".lammps",
-                ]),
-            timeout=None,
-            encoding="utf8",
+        cmd = self.attrs["executable"].split() + [
+            "-log", self.attrs['name'] + ".lmp.log",
+            "-in", self.attrs["name"] + ".lammps",
+        ]
+        self.process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=sys.stderr,
         )
-
-        self._process_stdout(child)
-        child.close()
-
-        self._hasexecuted = True
-
-    def _process_stdout(self, child):
-        atoms = 0
-        for line in child:
-            line = line.rstrip("\r\n")
-            if line == "Created 1 atoms":
-                atoms += 1
-                continue
-            elif line == "Created 0 atoms":
-                raise SimulationError(
-                    "lammps created 0 atoms - perhaps you placed ions "
-                    "with positions outside the simulation domain?"
-                )
-
-            if atoms:
-                atoms = False
-                continue
-
+        for line in self.process.stdout.readlines():
             print(line)
+        retcode = self.process.wait()
+        self._hasexecuted = True
+        return retcode
+    def signal_handler(self, frame):
+        self.process.send_signal(signal.SIGINT)
+        retcode = self.process.wait()
+        self._hasexecuted = True
+        return retcode

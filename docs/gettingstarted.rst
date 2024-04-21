@@ -38,7 +38,6 @@ pylion depends on a few packages that will be installed via ``pip`` when running
 If you are using Anaconda you probably have some of them installed already.
 
 - ``h5py`` for dealing with h5 files.
-- ``pexpect`` for real-time tty output.
 - ``termcolor`` for pretty-printing of function documentation.
 - ``jinja2`` for generating the lammps templates.
 - ``numpy`` for less than you might think.
