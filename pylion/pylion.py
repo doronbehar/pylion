@@ -28,7 +28,6 @@ class Attributes(dict):
 
     def save(self, filename):
         with h5py.File(filename, "a") as f:
-            print(f"Saving attributes to {filename}")
             f.attrs.update({k: json.dumps(v) for k, v in self.items()})
 
     def load(self, filename):
@@ -92,7 +91,6 @@ class Simulation(list):
 
         timestep = this.get("timestep", 1e12)
         if timestep < self.attrs["timestep"]:
-            print(f"Reducing timestep to {timestep} sec")
             self.attrs["timestep"] = timestep
 
         super().append(this)
@@ -228,7 +226,6 @@ class Simulation(list):
                 )
 
             if atoms:
-                print(f"Created {atoms} atoms.")
                 atoms = False
                 continue
 
