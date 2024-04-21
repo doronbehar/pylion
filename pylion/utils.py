@@ -94,11 +94,6 @@ def _savecallersource(h5file):
             _savescriptsource(h5file, frame.filename)
             return
 
-    # cannot save on the h5 file if using the repl
-    warnings.warn(
-        "Caller source not saved. " "Are you running the simulation from the REPL?"
-    )
-
 
 # def validate_vars(func):
 #     @functools.wraps(func)
