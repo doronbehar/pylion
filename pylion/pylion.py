@@ -202,7 +202,7 @@ class Simulation(list):
         retcode = self.process.wait()
         self._hasexecuted = True
         return retcode
-    def signal_handler(self, frame):
+    def signal_handler(self, sNum, sFrame):
         self.process.send_signal(signal.SIGINT)
         retcode = self.process.wait()
         self._hasexecuted = True
