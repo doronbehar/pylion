@@ -196,14 +196,15 @@ class Simulation(list):
             cmd,
             stdout=subprocess.PIPE,
             stderr=sys.stderr,
+            bufsize=1,
+            universal_newlines=True,
         )
-        for line in self.process.stdout.readlines():
-            print(line)
-        retcode = self.process.wait()
+        for line in self.process.stdout:
+            print(line, end='')
         self._hasexecuted = True
-        return retcode
+        return self.process.returncode
     def signal_handler(self, sNum, sFrame):
         self.process.send_signal(signal.SIGINT)
-        retcode = self.process.wait()
         self._hasexecuted = True
-        return retcode
+        return self.process.returncode
+
