@@ -200,6 +200,34 @@ def langevinbath(uid, temperature, dampingtime):
 
 
 @lammps.fix
+def lasercoolLowVelocity(uid, ions, k):
+    """Simulates laser cooling of a particular ion species by damping the
+    velocity of the ions. This force fits a model correct only for low
+    velocities:
+
+        .. math::
+            `\\vec{F} = - \\frac{\\hbar\\vec{v}\\cdot\\vec{k}}{4} \\vec{k}`.
+
+    See Also: langevinbath
+
+    :param ions: select species of ions
+    :param k: (kx, ky, kz) laser wavevector
+    """
+
+    gid = ions["uid"]
+    hbar4 = 1.054571818e-34/4
+    lines = [
+        "\n# Define laser cooling for a particular atom species.",
+        f"group {uid} type {gid}",
+        f'variable fX{uid} atom "-{hbar4} * ({k[0]}*vx+{k[1]}*vy+{k[2]}*vz) * {k[0]}"',
+        f'variable fY{uid} atom "-{hbar4} * ({k[0]}*vx+{k[1]}*vy+{k[2]}*vz) * {k[1]}"',
+        f'variable fZ{uid} atom "-{hbar4} * ({k[0]}*vx+{k[1]}*vy+{k[2]}*vz) * {k[2]}"',
+        f"fix {uid} {gid} addforce v_fX{uid} v_fY{uid} v_fZ{uid}\n",
+    ]
+
+    return {"code": lines}
+
+@lammps.fix
 def lasercool(uid, ions, k, Gamma, Omega, delta):
     """Simulates laser cooling of a particular ion species by damping the
     velocity of the ions. The strength of the damping force has the form:
