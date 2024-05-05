@@ -202,11 +202,10 @@ def langevinbath(uid, temperature, dampingtime):
 @lammps.fix
 def lasercool(uid, ions, k, Gamma, Omega, delta):
     """Simulates laser cooling of a particular ion species by damping the
-    velocity of the ions. kx, ky, kz define the strength of the damping force,
-    which is of the form:
+    velocity of the ions. The strength of the damping force has the form:
 
         .. math::
-            `f_i = \\hbar \\vec{k} \\frac{\\Gamma}{2} \\frac{\\Omega^2/2}{(\\delta - \\vec{k}\\cdot\\vec{v})^2+\\Gamma^2/4 + \\Omega^2/2}`.
+            `\\vec{F} = \\hbar \\vec{k} \\frac{\\Gamma}{2} \\frac{\\Omega^2/2}{(\\delta - \\vec{k}\\cdot\\vec{v})^2+\\Gamma^2/4 + \\Omega^2/2}`.
 
     See Also: langevinbath
 
