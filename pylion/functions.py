@@ -250,9 +250,9 @@ def lasercool(uid, ions, k, Gamma, Omega, delta):
     lines = [
         "\n# Define laser cooling for a particular atom species.",
         f"group {uid} type {gid}",
-        f'variable fX{uid} atom "{mostNominator} * {k[0]} / ({mostDenominator} + ({delta} - {k[0]}*vx)^2)"',
-        f'variable fY{uid} atom "{mostNominator} * {k[1]} / ({mostDenominator} + ({delta} - {k[1]}*vy)^2)"',
-        f'variable fZ{uid} atom "{mostNominator} * {k[2]} / ({mostDenominator} + ({delta} - {k[2]}*vz)^2)"',
+        f'variable fX{uid} atom "{mostNominator} * {k[0]} / ({mostDenominator} + ({delta} - ({k[0]}*vx + {k[1]}*vy + {k[2]}*vz))^2)"',
+        f'variable fY{uid} atom "{mostNominator} * {k[1]} / ({mostDenominator} + ({delta} - ({k[0]}*vx + {k[1]}*vy + {k[2]}*vz))^2)"',
+        f'variable fZ{uid} atom "{mostNominator} * {k[2]} / ({mostDenominator} + ({delta} - ({k[0]}*vx + {k[1]}*vy + {k[2]}*vz))^2)"',
         f"fix {uid} {gid} addforce v_fX{uid} v_fY{uid} v_fZ{uid}\n",
     ]
 
