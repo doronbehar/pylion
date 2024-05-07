@@ -266,6 +266,7 @@ def _rftrap(uid, trap):
     length = trap["length"]
     kappa = trap["kappa"]
     anisotropy = trap.get("anisotropy", 1)
+    activeRegion = trap.get("activeRegion", "1")
     offset = trap.get("offset", (0, 0))
 
     odict["timestep"] = 1 / np.max(trap["frequency"]) / 20
@@ -323,9 +324,10 @@ def _rftrap(uid, trap):
     xc = " + ".join(xc)
     yc = " + ".join(yc)
 
-    lines.append(f'variable oscEX{uid} atom "{xc} + v_statConst{uid} * {xpos}"')
-    lines.append(f'variable oscEY{uid} atom "{yc} + v_statConst{uid} * {ypos}"')
-    lines.append(f'variable statEZ{uid} atom "v_statConst{uid} * 2 * -z"')
+    lines.append(f'variable isInRegion{uid} atom "{activeRegion}"')
+    lines.append(f'variable oscEX{uid}  atom "v_isInRegion{uid} * ({xc} + v_statConst{uid} * {xpos})"')
+    lines.append(f'variable oscEY{uid}  atom "v_isInRegion{uid} * ({yc} + v_statConst{uid} * {ypos})"')
+    lines.append(f'variable statEZ{uid} atom "v_isInRegion{uid} * (v_statConst{uid} * 2 * -z)"')
     lines.append(f"fix {uid} all efield v_oscEX{uid} v_oscEY{uid} v_statEZ{uid}\n")
 
     odict.update({"code": lines})
@@ -363,12 +365,17 @@ def linearpaultrap(uid, trap, ions=None, all=True):
     characterisation of the trap follows Berkeland et al. (1998).
     'trap' shoud be a dictionary with the following items:
 
-    - 'radius', of the trap in meters
-    - 'length', of the trap in meters
+    - 'radius', of the trap in meters.
+    - 'length', of the trap in meters.
     - 'kappa', is a geometric factor defined in Berkeland et al.
     - 'frequency', should be in Hz, not radians per second.
-    - 'voltage', is the voltage of the rf electrodes
-    - 'endcapvoltage', the voltage of the endcaps
+    - 'voltage', is the voltage of the rf electrodes.
+    - 'endcapvoltage', the voltage of the endcaps.
+    - 'activeRegion', a lammps variable argument that controls the active
+      region in which the trap should hold. Default is simply ``"1"`` - meaning
+      the trap is active everywhere. For example, to make the trap work only on
+      a circle of radius 2 meters, use ``"x^2+y^2+z^2 < 2"``. Other binary
+      operators are supported by lammps.
 
     The are also three optional parameters:
     - 'anisotropy', is used to imbalance fields in x and y directions,
@@ -376,7 +383,8 @@ def linearpaultrap(uid, trap, ions=None, all=True):
     - 'offset', moves the center of the trap away from the rf-null axis.
     Defaults to (0, 0).
     - 'pseudo', boolean to choose between the full rf trap or the corresponding
-    pseudopoential. Defaults to False.
+    pseudopoential. Defaults to False. If True, the activeRegion key of the trap
+    is ignored.
 
     'frequency' and 'voltage' can be specified as vectors, in which case a
     multi-frequency Paul trap is created.
