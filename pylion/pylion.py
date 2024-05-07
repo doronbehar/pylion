@@ -202,9 +202,12 @@ class Simulation(list):
         for line in self.process.stdout:
             print(line, end='')
         self._hasexecuted = True
-        return self.process.returncode
+        if self.process.returncode != 0:
+            sys.exit(self.process.returncode)
+        else:
+            return self.process.returncode
     def signal_handler(self, sNum, sFrame):
         self.process.send_signal(signal.SIGINT)
         self._hasexecuted = True
-        return self.process.returncode
+        sys.exit(self.process.returncode)
 
