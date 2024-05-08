@@ -187,6 +187,7 @@ class Simulation(list):
         self._writeinputfile()
 
         signal.signal(signal.SIGINT, self.signal_handler)
+        signal.signal(signal.SIGTERM, self.signal_handler)
 
         cmd = self.attrs["executable"].split() + [
             "-log", self.attrs['name'] + ".lmp.log",
@@ -202,12 +203,11 @@ class Simulation(list):
         for line in self.process.stdout:
             print(line, end='')
         self._hasexecuted = True
-        if self.process.returncode != 0:
-            sys.exit(self.process.returncode)
-        else:
-            return self.process.returncode
+        return self.process.returncode
+    # The user is responsible to attach this to their signal handlers,
+    # recommended: https://stackoverflow.com/a/72592788/4935114
     def signal_handler(self, sNum, sFrame):
-        self.process.send_signal(signal.SIGINT)
+        self.process.send_signal(sNum)
         self._hasexecuted = True
-        sys.exit(self.process.returncode)
+        return self.process.returncode
 
