@@ -206,8 +206,7 @@ class Simulation(list):
         return self.process.returncode
     # The user is responsible to attach this to their signal handlers,
     # recommended: https://stackoverflow.com/a/72592788/4935114
-    def signal_handler(self, sNum, sFrame):
-        self.process.send_signal(sNum)
-        self._hasexecuted = True
-        return self.process.returncode
-
+    def signal_handler(self, *args):
+        if hasattr(self, 'process') and getattr(self, '_hasexecuted', False):
+            self.process.send_signal(sig=signal.SIGTERM)
+            self._hasexecuted = True
