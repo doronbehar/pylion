@@ -8,8 +8,6 @@ import sys
 import time
 import subprocess
 
-from .utils import save_atttributes_and_files
-
 __version__ = "0.5.3"
 
 
@@ -17,19 +15,6 @@ class SimulationError(Exception):
     """Custom error class for Simulation."""
 
     pass
-
-
-class Attributes(dict):
-    """Light dict wrapper to serve as a container of attributes."""
-
-    def save(self, filename):
-        with h5py.File(filename, "a") as f:
-            f.attrs.update({k: json.dumps(v) for k, v in self.items()})
-
-    def load(self, filename):
-        with h5py.File(filename, "r") as f:
-            return {k: json.loads(v) for k, v in f.attrs.items()}
-
 
 class Simulation(list):
     def __init__(self, name="pylion"):
@@ -41,7 +26,7 @@ class Simulation(list):
         # slugify 'name' to use for filename
         name = name.replace(" ", "_").lower()
 
-        self.attrs = Attributes()
+        self.attrs = {}
         self.attrs['gpu'] = None
         self.attrs['executable'] = 'lmp_serial'
         self.attrs['thermo_styles'] = ['step', 'cpu']
@@ -53,10 +38,6 @@ class Simulation(list):
         self.attrs['template'] = 'simulation.j2'
         self.attrs['version'] = __version__
         self.attrs['rigid'] = {'exists': False}
-
-        # # initalise the h5 file
-        # with h5py.File(self.attrs['name'] + '.h5', 'w') as f:
-        #     pass
 
     def __contains__(self, this):
         """Check if an item exists in the simulation using its ``uid``."""
@@ -175,7 +156,6 @@ class Simulation(list):
             if line.startswith("dump")
         ]
 
-    @save_atttributes_and_files
     def execute(self):
         """Write lammps input file and run the simulation."""
 
