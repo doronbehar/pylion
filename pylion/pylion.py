@@ -24,7 +24,7 @@ class Simulation(list):
         self._uids = []
 
         # slugify 'name' to use for filename
-        name = name.replace(" ", "_").lower()
+        name = name.replace(" ", "_")
 
         self.attrs = {}
         self.attrs['gpu'] = None
