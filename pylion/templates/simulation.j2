@@ -31,15 +31,23 @@ neigh_modify once yes
 pair_style coul/cut {{ coulombcutoff }}
 pair_coeff * *
 
-# Placing individual ions...
 {% for ions in species %}
+{% if ions.code %}
+{% for line in ions.code %}
+{{ line }}
+{% endfor %}
+{% else %}
 {% for position in ions.positions %}
+# Placing individual ions...
 create_atoms {{ ions.uid }} single {{ position|join(' ') }} units box
 {% endfor %}
+{% endif %}
 
 # Species...
 mass {{ ions.uid }} {{ 1.660539*10**(-27) * ions.mass }}
+{% if ions.positions %}
 set type {{ ions.uid }} charge {{ 1.60217646*10**(-19) * ions.charge }}
+{% endif %}
 group {{ ions.uid }} type {{ ions.uid }}
 
 {% endfor %}
