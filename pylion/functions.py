@@ -455,20 +455,21 @@ def compute(uid, styles, group="all"):
     return {"code": lines}
 
 @lammps.variable("fix")
-def timeaverage(uid, steps, variables, style="ave/atom", **kwargs):
+def timeaverage(uid, steps, variables, style="ave/atom", group="all", **kwargs):
     """A variable in LAMMPS representing a time averaged quantity over a
     number of steps.
 
     :param steps: number of steps to average over
     :param variables: list of variables to be averaged
     :param style: style name of this fix command (defaults to 'ave/atom')
+    :param group: group name of this fix command (defaults to 'all')
     :param \**kwargs: Arbitrary keyword arguments recognised by lammps
     """
 
     variables = " ".join(variables)
     kwargs = ' '.join("{} {}".format(x,y) for x, y in kwargs.items())
 
-    lines = [f"fix {uid} all {style} 1 {steps:d} {steps:d} {variables} {kwargs}\n"]
+    lines = [f"fix {uid} {group} {style} 1 {steps:d} {steps:d} {variables} {kwargs}\n"]
 
     return {"code": lines}
 
