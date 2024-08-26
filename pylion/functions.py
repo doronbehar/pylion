@@ -292,7 +292,7 @@ def _rftrap(uid, trap):
     for i, (v, f) in enumerate(zip(voltages, freqs)):
         lines.append(f"variable oscVx{uid}{i:d}\t\tequal {v:e}")
         lines.append(f"variable oscVy{uid}{i:d}\t\tequal {anisotropy*v:e}")
-        lines.append(f'variable phase{uid}{i:d}\t\tequal "{2*np.pi*f:e} * step*dt"')
+        lines.append(f'variable phase{uid}{i:d}\t\tequal "2 * PI * {f} * step*dt"')
         lines.append(
             f'variable oscConstx{uid}{i:d}\t\tequal "v_oscVx{uid}{i:d}/(v_radius{uid}*v_radius{uid})"'
         )
