@@ -216,12 +216,13 @@ def lasercoolLowVelocity(uid, ions, k):
 
     gid = ions["uid"]
     hbar4 = 1.054571818e-34/4
+    ksquared = np.linalg.norm(k)**2
     lines = [
         "\n# Define laser cooling for a particular atom species.",
         f"group {uid} type {gid}",
-        f'variable fX{uid} atom "-{hbar4} * ({k[0]}*vx+{k[1]}*vy+{k[2]}*vz) * {k[0]}"',
-        f'variable fY{uid} atom "-{hbar4} * ({k[0]}*vx+{k[1]}*vy+{k[2]}*vz) * {k[1]}"',
-        f'variable fZ{uid} atom "-{hbar4} * ({k[0]}*vx+{k[1]}*vy+{k[2]}*vz) * {k[2]}"',
+        f'variable fX{uid} atom "-{hbar4} * {ksquared} * vx"',
+        f'variable fY{uid} atom "-{hbar4} * {ksquared} * vy"',
+        f'variable fZ{uid} atom "-{hbar4} * {ksquared} * vz"',
         f"fix {uid} {gid} addforce v_fX{uid} v_fY{uid} v_fZ{uid}\n",
     ]
 
